@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search with Auto-complete</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f9f9f9;
+        }
+        .search-container {
+            position: relative;
+            width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .suggestions {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            border: 1px solid #ccc;
+            border-top: none;
+            background: white;
+            z-index: 1000;
+            max-height: 150px;
+            overflow-y: auto;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .suggestion {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .suggestion:hover {
+            background-color: #f0f0f0;
+        }
+        .suggestion span {
+            display: block;
+            color: #555;
+        }
+        .suggestion .name {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="search-container">
+    <input type="text" id="search" placeholder="Search...">
+    <div id="suggestions" class="suggestions"></div>
+</div>
+
+<script>
+    // Dummy JSON data
+    const data = [
+        { name: "Alice Johnson", email: "alice@example.com", phone: "123-456-7890" },
+        { name: "Bob Smith", email: "bob@example.com", phone: "987-654-3210" },
+        { name: "Charlie Brown", email: "charlie@example.com", phone: "555-555-5555" },
+        { name: "Diana Ross", email: "diana@example.com", phone: "444-444-4444" },
+        { name: "Evan Peters", email: "evan@example.com", phone: "333-333-3333" }
+    ];
+
+    const searchInput = document.getElementById('search');
+    const suggestionsContainer = document.getElementById('suggestions');
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        suggestionsContainer.innerHTML = '';
+
+        if (query) {
+            const filteredData = data.filter(item => 
+                item.name.toLowerCase().includes(query) ||
+                item.email.toLowerCase().includes(query) ||
+                item.phone.includes(query)
+            );
+
+            filteredData.forEach(item => {
+                const suggestionElement = document.createElement('div');
+                suggestionElement.classList.add('suggestion');
+                suggestionElement.innerHTML = `
+                    <span class="name">${item.name}</span>
+                    <span>${item.email}</span>
+                    <span>${item.phone}</span>
+                `;
+                suggestionElement.addEventListener('click', () => {
+                    searchInput.value = item.name;
+                    suggestionsContainer.innerHTML = '';
+                });
+                suggestionsContainer.appendChild(suggestionElement);
+            });
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-container')) {
+            suggestionsContainer.innerHTML = '';
+        }
+    });
+</script>
+
+</body>
+</html>
